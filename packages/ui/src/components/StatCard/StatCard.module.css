@@ -1,0 +1,53 @@
+.card {
+  padding: var(--space-4);
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+}
+
+.label {
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-2);
+}
+
+.value {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  letter-spacing: -0.02em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.value.flash-positive {
+  animation: flashPositive 0.6s ease;
+}
+
+.value.flash-negative {
+  animation: flashNegative 0.6s ease;
+}
+
+@keyframes flashPositive {
+  0%   { color: var(--color-positive); }
+  100% { color: var(--color-text-primary); }
+}
+
+@keyframes flashNegative {
+  0%   { color: var(--color-negative); }
+  100% { color: var(--color-text-primary); }
+}
+
+.change {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  margin-top: var(--space-2);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.change-positive { color: var(--color-positive); }
+.change-negative { color: var(--color-negative); }
+.change-neutral  { color: var(--color-text-muted); }

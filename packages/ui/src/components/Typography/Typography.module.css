@@ -1,0 +1,37 @@
+.h1 { font-size: 2rem;     font-weight: 600; line-height: 1.2; letter-spacing: -0.03em; color: var(--color-text-primary); }
+.h2 { font-size: 1.5rem;   font-weight: 600; line-height: 1.25; letter-spacing: -0.02em; color: var(--color-text-primary); }
+.h3 { font-size: 1.25rem;  font-weight: 500; line-height: 1.3;  letter-spacing: -0.01em; color: var(--color-text-primary); }
+.h4 { font-size: 1rem;     font-weight: 500; line-height: 1.4;  color: var(--color-text-primary); }
+
+.body-lg { font-size: 1rem;      line-height: 1.6; color: var(--color-text-primary); }
+.body-md { font-size: 0.9375rem; line-height: 1.6; color: var(--color-text-primary); }
+.body-sm { font-size: 0.875rem;  line-height: 1.5; color: var(--color-text-primary); }
+
+.caption { font-size: 0.8125rem; line-height: 1.4; color: var(--color-text-muted); }
+
+.code-inline {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 0.1em 0.35em;
+  color: var(--color-text-primary);
+}
+
+.code-block {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  line-height: 1.6;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  color: var(--color-text-primary);
+  overflow-x: auto;
+  display: block;
+  white-space: pre;
+}
+
+.muted { color: var(--color-text-muted); }
+.secondary { color: var(--color-text-secondary); }
