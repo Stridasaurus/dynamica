@@ -1,158 +1,109 @@
 import { Link } from 'react-router-dom';
-import { Card, Badge } from '@settgast/ui';
-
-const PILLARS = [
-  {
-    icon: '∿',
-    title: 'Stochastic Processes',
-    body: 'Price returns and neural membrane noise both arise from Wiener process dynamics. Understanding one sharpens intuition for the other.',
-  },
-  {
-    icon: '∂',
-    title: 'Differential Equations',
-    body: 'Market microstructure models and leaky integrate-and-fire neurons are both described by coupled ODEs. The same solution methods apply.',
-  },
-  {
-    icon: '≈',
-    title: 'Information & Measurement',
-    body: 'Pearson correlation, Shannon entropy, and signal detection theory connect portfolio analysis to neural coding. Math is the common language.',
-  },
-];
+import { Card } from '@settgast/ui';
+import { STUDIOS, coreTools, liveCount, modelsByStudio } from '../models';
 
 export default function LandingPage() {
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-20">
+    <div className="mx-auto max-w-5xl px-4 py-20 sm:px-6">
       {/* Hero */}
-      <div className="text-center mb-10">
-        <h1 className="text-5xl sm:text-6xl font-bold tracking-tight text-gray-900 dark:text-gray-50 mb-4">
+      <div className="mb-12 text-center">
+        <h1 className="mb-4 text-5xl font-bold tracking-tight text-gray-900 dark:text-gray-50 sm:text-6xl">
           Dynamica
         </h1>
-        <p className="text-xl text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">
-          Quantitative tools for exploring dynamical systems — from financial markets to neural dynamics.
+        <p className="mx-auto max-w-2xl text-xl text-gray-500 dark:text-gray-400">
+          Interactive toy models for dynamical systems — across finance, neuroscience, and signal
+          processing.
         </p>
-        <p className="text-sm text-gray-400 dark:text-gray-600 mt-2">
-          Open-source, client-side, and always free.
+        <p className="mx-auto mt-4 max-w-2xl text-sm text-gray-500 dark:text-gray-400">
+          The same mathematics runs through all three fields. Browse by{' '}
+          <span className="font-medium text-gray-700 dark:text-gray-300">studio</span> to explore one
+          field, or by{' '}
+          <Link to="/tools" className="font-medium text-indigo-600 hover:underline dark:text-indigo-400">
+            mathematical tool
+          </Link>{' '}
+          to see one idea expressed in all three.
         </p>
       </div>
 
-      {/* Throughline */}
-      <p className="text-center max-w-2xl mx-auto text-sm text-gray-500 dark:text-gray-400 mb-12">
-        Financial markets and neural networks are both complex dynamical systems — driven by differential
-        equations, stochastic processes, and the mathematics of measurement. The tools here apply a shared
-        quantitative framework to visualize and simulate these systems across domains.
-      </p>
-
-      {/* App cards */}
-      <div className="grid sm:grid-cols-2 gap-6">
-        {/* QuantViz Studio */}
-        <Link to="/quantviz" className="group block">
-          <Card hoverable className="h-full p-6 transition-shadow group-hover:shadow-lg">
-            <div className="flex items-start justify-between mb-4">
-              <div className="w-12 h-12 rounded-xl bg-indigo-100 dark:bg-indigo-900/40 flex items-center justify-center text-2xl">
-                📈
-              </div>
-              <Badge variant="positive">Live</Badge>
-            </div>
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-1">
-              QuantViz Studio
-            </h2>
-            <p className="text-xs font-medium uppercase tracking-widest text-indigo-400 mb-3">
-              The Market Lens
-            </p>
-            <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed mb-4">
-              Build a portfolio of stocks, ETFs, crypto, and commodities. Visualize rolling
-              correlations, cumulative returns, and risk metrics across 3-month to 20-year windows.
-            </p>
-            <ul className="space-y-1.5 text-sm text-gray-600 dark:text-gray-400">
-              <li className="flex items-center gap-2">
-                <span className="text-indigo-500">✓</span> Rolling correlation heatmap with time slider
-              </li>
-              <li className="flex items-center gap-2">
-                <span className="text-indigo-500">✓</span> Cumulative returns &amp; portfolio chart
-              </li>
-              <li className="flex items-center gap-2">
-                <span className="text-indigo-500">✓</span> 8 curated preset portfolios
-              </li>
-              <li className="flex items-center gap-2">
-                <span className="text-indigo-500">✓</span> Sharpe ratio, volatility, annualized return
-              </li>
-              <li className="flex items-center gap-2">
-                <span className="text-indigo-500">✓</span> Shareable URL state
-              </li>
-            </ul>
-            <div className="mt-5 inline-flex items-center gap-1.5 text-sm font-medium text-indigo-600 dark:text-indigo-400 group-hover:gap-2.5 transition-all">
-              Open QuantViz <span aria-hidden>→</span>
-            </div>
-          </Card>
-        </Link>
-
-        {/* NeuroLearn Studio — coming soon */}
-        <div className="opacity-60 cursor-not-allowed">
-          <Card className="h-full p-6">
-            <div className="flex items-start justify-between mb-4">
-              <div className="w-12 h-12 rounded-xl bg-purple-100 dark:bg-purple-900/40 flex items-center justify-center text-2xl">
-                🧠
-              </div>
-              <Badge variant="warning">Coming soon</Badge>
-            </div>
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-1">
-              NeuroLearn Studio
-            </h2>
-            <p className="text-xs font-medium uppercase tracking-widest text-purple-400 mb-3">
-              The Neural Lens
-            </p>
-            <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed mb-4">
-              Interactive leaky integrate-and-fire neuron simulator. Explore membrane
-              potential dynamics, spiking thresholds, and input current patterns —
-              all running in-browser via a JavaScript engine.
-            </p>
-            <ul className="space-y-1.5 text-sm text-gray-600 dark:text-gray-400">
-              <li className="flex items-center gap-2">
-                <span className="text-purple-400">◦</span> Real-time membrane potential plots
-              </li>
-              <li className="flex items-center gap-2">
-                <span className="text-purple-400">◦</span> Configurable neuron parameters
-              </li>
-              <li className="flex items-center gap-2">
-                <span className="text-purple-400">◦</span> Step, ramp, and sinusoidal inputs
-              </li>
-              <li className="flex items-center gap-2">
-                <span className="text-purple-400">◦</span> Ported from the LIF-project simulation engine
-              </li>
-            </ul>
-          </Card>
+      {/* Browse by studio */}
+      <section className="mb-16">
+        <h2 className="mb-5 text-sm font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500">
+          Browse by studio
+        </h2>
+        <div className="grid gap-6 sm:grid-cols-3">
+          {STUDIOS.map((studio) => {
+            const total = modelsByStudio(studio.id).length;
+            const live = liveCount(studio.id);
+            return (
+              <Link key={studio.id} to={`/studios/${studio.id}`} className="group block">
+                <Card
+                  hoverable
+                  className={`flex h-full flex-col border border-transparent p-6 transition-all group-hover:shadow-lg ${studio.theme.hoverBorder}`}
+                >
+                  <div
+                    className={`mb-4 flex h-12 w-12 items-center justify-center rounded-xl text-2xl ${studio.theme.tint}`}
+                  >
+                    {studio.icon}
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                    {studio.name}
+                  </h3>
+                  <p
+                    className={`mb-3 text-xs font-medium uppercase tracking-widest ${studio.theme.text}`}
+                  >
+                    {studio.lens}
+                  </p>
+                  <p className="mb-4 flex-1 text-sm leading-relaxed text-gray-500 dark:text-gray-400">
+                    {studio.blurb}
+                  </p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500">
+                    {live > 0 ? `${live} live · ` : ''}
+                    {total} models
+                  </p>
+                </Card>
+              </Link>
+            );
+          })}
         </div>
-      </div>
+      </section>
 
-      {/* Shared Mathematical Foundation */}
-      <div className="mt-20">
-        <div className="text-center mb-8">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-            The Shared Mathematical Foundation
-          </h3>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-            The same quantitative tools describe both systems.
-          </p>
+      {/* Browse by tool */}
+      <section className="mb-16">
+        <div className="mb-5 flex items-end justify-between">
+          <h2 className="text-sm font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500">
+            Browse by mathematical tool
+          </h2>
+          <Link
+            to="/tools"
+            className="text-sm font-medium text-indigo-600 hover:underline dark:text-indigo-400"
+          >
+            See all →
+          </Link>
         </div>
-        <div className="grid sm:grid-cols-3 gap-6">
-          {PILLARS.map((p) => (
-            <div
-              key={p.title}
-              className="border border-gray-200 dark:border-gray-800 rounded-xl p-5"
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {coreTools().map((tool) => (
+            <Link
+              key={tool.id}
+              to={`/tools/${tool.id}`}
+              className="group flex items-center gap-3 rounded-xl border border-gray-200 p-4 transition-colors hover:border-gray-400 dark:border-gray-800 dark:hover:border-gray-600"
             >
-              <div className="text-2xl font-mono text-gray-400 dark:text-gray-600 mb-3 select-none">
-                {p.icon}
-              </div>
-              <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                {p.title}
-              </h4>
-              <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
-                {p.body}
-              </p>
-            </div>
+              <span className="select-none font-mono text-2xl text-gray-400 dark:text-gray-600">
+                {tool.symbol}
+              </span>
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                {tool.name.split(' & ')[0]}
+              </span>
+            </Link>
           ))}
         </div>
-      </div>
+      </section>
+
+      {/* Thesis */}
+      <p className="mx-auto max-w-2xl text-center text-sm leading-relaxed text-gray-500 dark:text-gray-400">
+        Correlation measures diversification in a portfolio, co-firing between neurons, and the
+        direction of a wavefront across a sensor array. Dynamica is built around connections like
+        this — the dual navigation makes them tangible.
+      </p>
     </div>
   );
 }

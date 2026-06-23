@@ -2,9 +2,16 @@
 
 ## Overview
 
-**Dynamica** is a Turborepo/pnpm monorepo housing two research apps:
-- **QuantViz Studio** (`apps/dynamica`) — portfolio correlation analysis, live data
-- **NeuroLearn Studio** — planned; stub in the landing page navigation
+**Dynamica** is a Turborepo/pnpm monorepo of interactive toy models across three studios:
+- **QuantViz Studio** — finance; portfolio correlation analysis, live data (only live model today)
+- **NeuroLearn Studio** — neuroscience; planned models (LIF neuron, spike stats, …)
+- **SignalViz Studio** — signal processing; planned models (Fourier, filters, beamforming, …)
+
+The differentiator is **dual navigation**: browse *by studio* (a field) or *by mathematical tool*
+(the shared math, e.g. correlation appears in all three). Both views and the cross-link matrix are
+derived from a single registry — see `apps/dynamica/src/models/` (`registry.ts` is the source of
+truth; `index.ts` exposes selectors like `modelsByStudio`, `modelsByTool`, `crossLinks`). Add a model
+by appending one `ModelEntry`. The full content roadmap lives in `docs/CONTENT_PLAN.md`.
 
 Deployed as a static site to GitHub Pages at `https://stridasaurus.github.io/dynamica/`.
 
