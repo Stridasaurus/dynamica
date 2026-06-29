@@ -1,99 +1,87 @@
-# CLAUDE.md — Dynamica Monorepo
+# CLAUDE.md
+
+This file provides guidance to Claude Code when working in this repository.
 
 ## Overview
 
 **Dynamica** is a Turborepo/pnpm monorepo of interactive toy models across three studios:
-- **QuantViz Studio** — finance; portfolio correlation analysis, live data (only live model today)
-- **NeuroLearn Studio** — neuroscience; planned models (LIF neuron, spike stats, …)
-- **SignalViz Studio** — signal processing; planned models (Fourier, filters, beamforming, …)
+- **QuantViz Studio** — finance (portfolio correlation analysis is the only live model today)
+- **NeuroLearn Studio** — neuroscience (planned: LIF neuron, spike stats, …)
+- **SignalViz Studio** — signal processing (planned: Fourier, filters, beamforming, …)
 
-The differentiator is **dual navigation**: browse *by studio* (a field) or *by mathematical tool*
-(the shared math, e.g. correlation appears in all three). Both views and the cross-link matrix are
-derived from a single registry — see `apps/dynamica/src/models/` (`registry.ts` is the source of
-truth; `index.ts` exposes selectors like `modelsByStudio`, `modelsByTool`, `crossLinks`). Add a model
-by appending one `ModelEntry`. The full content roadmap lives in `docs/CONTENT_PLAN.md`.
+The differentiator is **dual navigation**: browse *by studio* or *by mathematical tool* (the shared
+math — e.g. correlation appears in all three). Both views and the cross-link matrix derive from a
+single registry. To add a model, append one `ModelEntry` to `apps/dynamica/src/models/registry.ts`.
+Roadmap: `docs/CONTENT_PLAN.md`.
 
-Deployed as a static site to GitHub Pages at `https://stridasaurus.github.io/dynamica/`.
+Deployed as a static site to GitHub Pages at `https://stridasaurus.github.io/dynamica/`
+(push to `master` → build → gh-pages).
 
-## Workspace Structure
+## Workspace structure
 
 ```
 dynamica/
 ├── apps/
-│   ├── dynamica/          # Main Vite/React 19 app (pnpm workspace member)
-│   ├── correlationlab/    # git submodule — original correlation SPA
-│   └── lif-project/       # git submodule — LIF neuron simulation
+│   ├── dynamica/          # Main Vite/React 19 app — @dynamica/app (the pnpm workspace member)
+│   ├── correlationlab/    # git submodule — original correlation SPA (NOT in pnpm workspace)
+│   └── lif-project/       # git submodule — LIF neuron sim (NOT in pnpm workspace)
 ├── packages/
-│   └── ui/                # @settgast/ui component library (local copy of settgast-ui)
-├── scripts/
-│   └── fetch_data.py      # Data pipeline; outputs to apps/dynamica/public/data/
-└── .github/workflows/
-    ├── data-refresh.yml   # Mon–Fri 4 PM EDT: fetch market data and auto-commit
-    └── deploy.yml         # Push to main → build → deploy to gh-pages
+│   └── ui/                # @settgast/ui — shared design-system component library
+├── scripts/fetch_data.py  # Data pipeline → apps/dynamica/public/data/
+└── .github/workflows/     # data-refresh.yml (Mon–Fri market data) · deploy.yml
 ```
+
+Submodules need `git submodule update --init --recursive` after cloning; they manage their own deps.
 
 ## Commands
 
 ```bash
-# Install all workspace dependencies
-pnpm install
-
-# Build the component library (required before running the app)
-pnpm --filter @settgast/ui build
-
-# Start QuantViz dev server (localhost:5173)
-pnpm --filter @dynamica/app dev
-
-# Build everything (turbo handles ordering: ui → app)
-pnpm build
-
-# Type-check
+pnpm install                         # all workspace deps
+pnpm --filter @settgast/ui build     # MUST build ui before the app can import from it
+pnpm --filter @dynamica/app dev      # dev server, localhost:5173
+pnpm build                           # build everything (turbo orders: ui → app)
 pnpm typecheck
-```
+pnpm --filter @dynamica/app test     # app tests only (pnpm test runs all)
 
-## Data Pipeline
-
-```bash
-# Fetch market data for all preset tickers, write to apps/dynamica/public/data/
-python scripts/fetch_data.py
-
-# Custom tickers or period:
+# Data pipeline (outputs {correlation,returns,prices}.json):
+python scripts/fetch_data.py                                   # preset tickers
 python scripts/fetch_data.py --tickers SPY BND GLD --period 5y
-
-# Install Python deps:
 pip install -r scripts/requirements.txt
 ```
 
-Output files: `apps/dynamica/public/data/{correlation,returns,prices}.json`
+## Gotchas & non-obvious behavior
 
-## Git Submodules
+**`@settgast/ui` build step.** Built with tsup; you must run its build before the app can import
+from it. Import the bundled CSS as `import '@settgast/ui/styles'`. This package is currently
+duplicated with the standalone `settgast-ui` repo — edit **only this copy** until the two sources
+are consolidated.
 
-The `apps/correlationlab` and `apps/lif-project` directories are git submodules.
-They are NOT included in the pnpm workspace — they manage their own dependencies.
+**Tailwind whole-class rule.** Class strings in `StudioTheme` (in the registry) must be written
+whole, never interpolated, or Tailwind's content scanner won't see them and the styles vanish.
 
-To init submodules after cloning:
-```bash
-git submodule update --init --recursive
-```
+**Vite base path.** `vite.config.ts` sets `base: '/dynamica/'`, so production asset URLs are
+prefixed with `/dynamica/`. Fetch static files via `import.meta.env.BASE_URL`, never absolute paths.
 
-## Key Architecture Notes
+**Dark mode.** `[data-theme="dark"]` selector strategy (from ThemeProvider in `@settgast/ui`);
+Tailwind config `darkMode: ['selector', '[data-theme="dark"]']` matches it.
 
-- **packages/ui** (`@settgast/ui`): Built with tsup. Must run `pnpm --filter @settgast/ui build`
-  before the app can import from it. Uses CSS modules scoped via a custom tsup post-build step.
-  Import the bundled CSS in consuming apps: `import '@settgast/ui/styles'`
+**Extended ranges.** Static JSON covers the 20 preset ETFs at ~2Y. Everything else — custom
+tickers, and *all* tickers at 5Y/10Y/20Y — is live-fetched; at those ranges the date axis derives
+from the live data, not from the static `dates` array.
 
-- **Dark mode**: Uses `[data-theme="dark"]` selector strategy (from ThemeProvider in @settgast/ui),
-  which Tailwind's `darkMode: ['selector', '[data-theme="dark"]']` config matches.
+**Live data fallback chain** (`src/lib/fetchTicker.ts`): Stooq → Yahoo, each through CORS proxies
+(corsproxy.io → allorigins.win → codetabs.com), then deterministic synthetic data seeded from the
+ticker string if every proxy fails.
 
-- **Routing**: HashRouter — required for GitHub Pages static hosting. Routes: `#/` and `#/quantviz`.
-  URL portfolio state encoded as `#/quantviz?t=SPY:10,BND:50&range=2Y&w=90`.
+## Routes (HashRouter — required for GitHub Pages static hosting)
 
-- **Static data**: ~2 years of daily data for 20 ETFs, pre-generated by `scripts/fetch_data.py`
-  and committed to `apps/dynamica/public/data/`. The app loads these on mount.
+- `#/` — landing
+- `#/studios/:studioId` — studio view (`quantviz` | `neurolearn` | `signalviz`)
+- `#/tools` and `#/tools/:toolId` — cross-studio tool views
+- `#/quantviz` — the live model; URL state e.g. `?t=SPY:10,BND:50&range=2Y&w=90`
 
-- **Live data**: The "Refresh Data" button fetches fresh prices via Stooq/Yahoo Finance
-  CORS proxies (corsproxy.io → allorigins.win → codetabs.com). Falls back to synthetic data
-  if all proxies fail.
+## Model catalog (`apps/dynamica/src/models/`)
 
-- **Extended ranges (5Y/10Y/20Y)**: Static JSON only covers ~2Y, so the app excludes static
-  tickers and drives the date axis from live-fetched custom ticker data.
+`registry.ts` is the single source of truth; `index.ts` exposes selectors (`modelsByStudio`,
+`modelsByTool`, `crossLinks`) that drive both navigation views automatically. Add a model by
+appending one `ModelEntry` — no other wiring needed.
