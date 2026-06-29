@@ -12,6 +12,8 @@ export const STUDIOS: Studio[] = [
     blurb:
       'Markets as stochastic dynamical systems. Build portfolios and watch ' +
       'correlation, risk, and returns evolve across time.',
+    headline: 'Financial markets as stochastic systems.',
+    color: '#1e63c4',
     theme: {
       text: 'text-indigo-600 dark:text-indigo-400',
       tint: 'bg-indigo-100 dark:bg-indigo-900/40',
@@ -28,6 +30,8 @@ export const STUDIOS: Studio[] = [
     blurb:
       'The brain as a network of excitable units. Simulate single neurons, ' +
       'spike statistics, and the dynamics of populations.',
+    headline: 'Neural dynamics, from first principles.',
+    color: '#6d3bd1',
     theme: {
       text: 'text-purple-600 dark:text-purple-400',
       tint: 'bg-purple-100 dark:bg-purple-900/40',
@@ -44,6 +48,8 @@ export const STUDIOS: Studio[] = [
     blurb:
       'The home of the shared toolkit. Decompose, filter, and detect — the ' +
       'operations that reappear in finance and neuroscience.',
+    headline: 'Measurement mathematics, made visual.',
+    color: '#0f8a6a',
     theme: {
       text: 'text-teal-600 dark:text-teal-400',
       tint: 'bg-teal-100 dark:bg-teal-900/40',

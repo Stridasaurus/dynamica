@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Card, Badge } from '@settgast/ui';
-import { getStudio } from '../../models';
+import { getStudio, getTool } from '../../models';
 import type { ModelEntry } from '../../models';
 import { ToolChip } from './ToolChip';
 
@@ -21,6 +21,7 @@ interface ModelCardProps {
 export function ModelCard({ model, hideStudioTag = false }: ModelCardProps) {
   const studio = getStudio(model.studio);
   const isLive = model.status === 'live' && model.route;
+  const primaryTool = model.tools[0] ? getTool(model.tools[0]) : null;
 
   const body = (
     <Card
@@ -58,13 +59,20 @@ export function ModelCard({ model, hideStudioTag = false }: ModelCardProps) {
         ))}
       </div>
 
-      <div className="mt-auto flex items-center justify-between border-t border-gray-100 pt-3 text-xs text-gray-400 dark:border-gray-800 dark:text-gray-500">
-        <span>{DIFFICULTY_LABEL[model.difficulty]}</span>
-        {isLive && (
-          <span className={`inline-flex items-center gap-1 font-medium ${studio.theme.text}`}>
-            Open <span aria-hidden>→</span>
-          </span>
-        )}
+      <div className="mt-auto flex items-center justify-between border-t border-gray-100 pt-3 text-xs dark:border-gray-800">
+        <span className="text-gray-400 dark:text-gray-500">{DIFFICULTY_LABEL[model.difficulty]}</span>
+        <div className="flex items-center gap-3">
+          {primaryTool && (
+            <span className="font-mono text-sm" style={{ color: studio.color }}>
+              {primaryTool.symbol}
+            </span>
+          )}
+          {isLive && (
+            <span className={`inline-flex items-center gap-1 font-medium ${studio.theme.text}`}>
+              Open <span aria-hidden>→</span>
+            </span>
+          )}
+        </div>
       </div>
     </Card>
   );

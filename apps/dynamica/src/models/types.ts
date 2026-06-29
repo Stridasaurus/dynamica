@@ -58,6 +58,10 @@ export interface Studio {
   icon: string;
   /** One-paragraph description */
   blurb: string;
+  /** Short punchy headline for the studio hero h1 */
+  headline: string;
+  /** Brand hex color for studio identity, e.g. "#1e63c4" */
+  color: string;
   theme: StudioTheme;
 }
 

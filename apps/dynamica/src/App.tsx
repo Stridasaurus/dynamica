@@ -9,7 +9,7 @@ import SiteFooter from './components/layout/SiteFooter';
 
 export default function App() {
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-950 transition-colors">
+    <div className="min-h-screen flex flex-col bg-[var(--color-bg)] transition-colors">
       <SiteHeader />
       <main className="flex-1">
         <Routes>
