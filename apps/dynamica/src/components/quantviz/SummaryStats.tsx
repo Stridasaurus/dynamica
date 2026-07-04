@@ -15,8 +15,6 @@ function fmt(n: number, decimals: number, suffix = ''): string {
 
 export default function SummaryStats({ data, series, rangeLabel }: Props) {
   const { tickers, matrix } = data;
-  if (tickers.length < 2) return null;
-
   const avg = avgPairwiseCorrelation(tickers, matrix);
   const { mostCorrelated, leastCorrelated } = extremePairs(tickers, matrix);
 

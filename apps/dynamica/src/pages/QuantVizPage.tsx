@@ -1,5 +1,6 @@
 import { useEffect, useRef, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { Badge } from '@settgast/ui';
 import { useQuantVizStore, PRESETS } from '../store/quantvizStore';
 import { correlationMatrix, normalizedCumulativeReturns } from '../lib/correlation';
 import { alignToReferenceDates, syntheticTicker, fetchTickerData } from '../lib/fetchTicker';
@@ -8,8 +9,13 @@ import type { CorrelationData, HoldingWithWeight, ReturnsData, RangePreset } fro
 import PortfolioBuilder from '../components/quantviz/PortfolioBuilder';
 import CorrelationHeatmap from '../components/quantviz/CorrelationHeatmap';
 import CumulativeReturns from '../components/quantviz/CumulativeReturns';
+import PortfolioChart from '../components/quantviz/PortfolioChart';
 import SummaryStats from '../components/quantviz/SummaryStats';
 import RollingWindowPanel from '../components/quantviz/RollingWindowPanel';
+
+function SectionTitle({ children }: { children: React.ReactNode }) {
+  return <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100">{children}</h2>;
+}
 
 const RANGE_DAYS: Record<RangePreset, number> = {
   '3M': 63, '6M': 126, '1Y': 252, '2Y': 504,
@@ -232,12 +238,13 @@ export default function QuantVizPage() {
       {/* Title row */}
       <div className="flex flex-col sm:flex-row sm:items-end gap-2">
         <div className="flex-1">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-50">QuantViz Studio</h1>
+          <div className="flex items-center gap-2.5">
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-50">QuantViz Studio</h1>
+            {isSynthetic && !hasSyntheticCustom && <Badge variant="warning">Synthetic data</Badge>}
+          </div>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
             {filteredReturns.dates.length} trading days
-            {isSynthetic && !hasSyntheticCustom && (
-              <span className="ml-2 text-amber-600 dark:text-amber-400">· Using synthetic data</span>
-            )}
+            {correlationData.generated_at && ` · Data: ${correlationData.generated_at.slice(0, 10)}`}
             {hasSyntheticCustom && (
               <span className="ml-2 text-amber-600 dark:text-amber-400">· Some tickers use synthetic data</span>
             )}
@@ -258,6 +265,30 @@ export default function QuantVizPage() {
         lastRefreshed={lastRefreshed}
       />
 
+      {/* Summary Statistics */}
+      <div className="flex flex-col gap-3">
+        <SectionTitle>Summary Statistics</SectionTitle>
+        <SummaryStats
+          data={rollingCorrelation}
+          series={filteredReturns.series}
+          rangeLabel={rangePreset}
+        />
+      </div>
+
+      {/* Correlation Heatmap + rolling window controls */}
+      <div className="flex flex-col gap-3">
+        <SectionTitle>Correlation Heatmap</SectionTitle>
+        <RollingWindowPanel
+          windowDays={windowDays}
+          onWindowChange={setWindowDays}
+          windowEndIdx={windowEndIdx}
+          onWindowEndChange={setWindowEndIdx}
+          maxIdx={maxWindowIdx}
+          filteredDates={filteredReturns.dates}
+        />
+        <CorrelationHeatmap data={rollingCorrelation} />
+      </div>
+
       {/* Cumulative Returns */}
       <CumulativeReturns
         data={filteredReturns}
@@ -265,25 +296,21 @@ export default function QuantVizPage() {
         onRangeChange={setRange}
       />
 
-      {/* Rolling Window + Heatmap */}
-      {Object.keys(filteredReturns.series).length >= 2 && (
-        <>
-          <RollingWindowPanel
-            windowDays={windowDays}
-            onWindowChange={setWindowDays}
-            windowEndIdx={windowEndIdx}
-            onWindowEndChange={setWindowEndIdx}
-            maxIdx={maxWindowIdx}
-            filteredDates={filteredReturns.dates}
-          />
-          <CorrelationHeatmap data={rollingCorrelation} />
-          <SummaryStats
-            data={rollingCorrelation}
-            series={filteredReturns.series}
-            rangeLabel={rangePreset}
-          />
-        </>
-      )}
+      {/* Portfolio Weighted Return */}
+      <div className="flex flex-col gap-3">
+        <SectionTitle>Portfolio Weighted Return</SectionTitle>
+        <p className="text-xs text-gray-400 dark:text-gray-500 -mt-2">
+          Blended portfolio return weighted by current holdings.
+        </p>
+        <PortfolioChart returnsData={filteredReturns} holdings={enrichedHoldings} />
+      </div>
+
+      {/* Provenance footer */}
+      <p className="text-center text-xs text-gray-400 dark:text-gray-600 border-t border-gray-200 dark:border-gray-800 pt-4 mt-2">
+        {correlationData.synthetic
+          ? 'Using synthetic data — live market data unavailable in this environment.'
+          : 'Market data via yfinance (pre-built) and Yahoo Finance (live additions). Not financial advice.'}
+      </p>
     </div>
   );
 }
