@@ -118,6 +118,20 @@ export const TOOLS: MathTool[] = [
   },
 ];
 
+// Governing-equation display strings for the 8 core tools — the row labels in
+// the cross-link Matrix and the landing hero. Secondary tools fall back to
+// their `symbol`.
+export const TOOL_EQ: Record<string, string> = {
+  correlation: 'ρ(X,Y) = Cov(X,Y)/σₓσᵧ',
+  fourier: 'X(f) = ∫ x(t) e⁻ⁱ²πft dt',
+  convolution: '(f ∗ g)(t) = ∫ f(τ) g(t−τ) dτ',
+  stochastic: 'dX = μ dt + σ dW',
+  'dynamical-systems': 'dx/dt = f(x, t)',
+  'linear-algebra': 'A = U Σ Vᵀ',
+  detection: 'x̂ = E[x | y]',
+  information: 'H(X) = −Σ p log p',
+};
+
 const TOOL_MAP: Record<ToolId, MathTool> = Object.fromEntries(
   TOOLS.map((t) => [t.id, t]),
 ) as Record<ToolId, MathTool>;

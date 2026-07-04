@@ -1,7 +1,7 @@
 // Public surface of the model catalog. Import from '../models' everywhere.
 export * from './types';
 export { STUDIOS, getStudio } from './studios';
-export { TOOLS, getTool, coreTools } from './tools';
+export { TOOLS, getTool, coreTools, TOOL_EQ } from './tools';
 export { MODELS } from './registry';
 
 import { MODELS } from './registry';

@@ -1,17 +1,20 @@
 import { useEffect, useRef, useMemo } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { Badge } from '@settgast/ui';
+import { useLocation, useNavigate, Link } from 'react-router-dom';
+import { Badge, Breadcrumb } from '@settgast/ui';
 import { useQuantVizStore, PRESETS } from '../store/quantvizStore';
 import { correlationMatrix, normalizedCumulativeReturns } from '../lib/correlation';
 import { alignToReferenceDates, syntheticTicker, fetchTickerData } from '../lib/fetchTicker';
 import { encodeURLState, decodeURLState } from '../lib/urlState';
 import type { CorrelationData, HoldingWithWeight, ReturnsData, RangePreset } from '../lib/types';
+import { MODELS, crossLinks } from '../models';
 import PortfolioBuilder from '../components/quantviz/PortfolioBuilder';
 import CorrelationHeatmap from '../components/quantviz/CorrelationHeatmap';
 import CumulativeReturns from '../components/quantviz/CumulativeReturns';
 import PortfolioChart from '../components/quantviz/PortfolioChart';
 import SummaryStats from '../components/quantviz/SummaryStats';
 import RollingWindowPanel from '../components/quantviz/RollingWindowPanel';
+
+const MODEL = MODELS.find((m) => m.id === 'qv-correlation-lab')!;
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100">{children}</h2>;
@@ -235,11 +238,19 @@ export default function QuantVizPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 flex flex-col gap-5">
+      <Breadcrumb
+        items={[
+          { label: 'Dynamica', href: '#/' },
+          { label: 'QuantViz Studio', href: '#/studios/quantviz' },
+          { label: MODEL.title },
+        ]}
+      />
+
       {/* Title row */}
       <div className="flex flex-col sm:flex-row sm:items-end gap-2">
         <div className="flex-1">
           <div className="flex items-center gap-2.5">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-50">QuantViz Studio</h1>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-50">{MODEL.title}</h1>
             {isSynthetic && !hasSyntheticCustom && <Badge variant="warning">Synthetic data</Badge>}
           </div>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
@@ -305,8 +316,29 @@ export default function QuantVizPage() {
         <PortfolioChart returnsData={filteredReturns} holdings={enrichedHoldings} />
       </div>
 
+      {/* Cross-link footer: same math, other studios */}
+      <div className="flex flex-wrap items-center gap-3 border-t border-gray-200 dark:border-gray-800 pt-4 mt-2">
+        <Link
+          to={`/tools/${MODEL.tools[0]}`}
+          className="text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:underline"
+        >
+          Same math, other studios →
+        </Link>
+        {crossLinks(MODEL.tools[0])
+          .filter((l) => l.studio !== MODEL.studio)
+          .map((l) => (
+            <Link
+              key={l.studio}
+              to={`/studios/${l.studio}`}
+              className="rounded-full border border-gray-200 dark:border-gray-700 px-3 py-1 text-xs text-gray-500 dark:text-gray-400 hover:border-gray-400 dark:hover:border-gray-500 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+            >
+              {l.models.length > 0 ? l.models[0].title : `No model yet in ${l.studio}`}
+            </Link>
+          ))}
+      </div>
+
       {/* Provenance footer */}
-      <p className="text-center text-xs text-gray-400 dark:text-gray-600 border-t border-gray-200 dark:border-gray-800 pt-4 mt-2">
+      <p className="text-center text-xs text-gray-400 dark:text-gray-600 border-t border-gray-200 dark:border-gray-800 pt-4">
         {correlationData.synthetic
           ? 'Using synthetic data — live market data unavailable in this environment.'
           : 'Market data via yfinance (pre-built) and Yahoo Finance (live additions). Not financial advice.'}

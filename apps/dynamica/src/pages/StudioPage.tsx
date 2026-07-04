@@ -1,6 +1,5 @@
 import { useParams, Link } from 'react-router-dom';
-import { StatCard } from '@settgast/ui';
-import { STUDIOS, getStudio, getTool, modelsByStudio, liveCount, crossLinks, coreTools } from '../models';
+import { STUDIOS, getStudio, getTool, modelsByStudio, crossLinks, coreTools } from '../models';
 import type { StudioId, ToolId } from '../models';
 import { ModelCard } from '../components/catalog/ModelCard';
 
@@ -39,7 +38,7 @@ function NeuroLearnGlyph({ size = 26 }: { size?: number }) {
   );
 }
 
-function SignalVizGlyph({ size = 26 }: { size?: number }) {
+function PhySimGlyph({ size = 26 }: { size?: number }) {
   return (
     <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
       <path d="M2 12c2 0 2-7 4-7s2 14 4 14 2-10 4-10 2 5 4 5h2" />
@@ -51,7 +50,7 @@ type GlyphProps = { size?: number };
 const GLYPHS: Record<string, React.ComponentType<GlyphProps>> = {
   quantviz: QuantVizGlyph,
   neurolearn: NeuroLearnGlyph,
-  signalviz: SignalVizGlyph,
+  physim: PhySimGlyph,
 };
 
 // ── Component ─────────────────────────────────────────────────────────────────
@@ -67,7 +66,6 @@ export default function StudioPage() {
 
   const studio = getStudio(studioId as StudioId);
   const models = modelsByStudio(studio.id);
-  const live = liveCount(studio.id);
   const Glyph = GLYPHS[studio.id];
 
   // ── Unique tools used by this studio's models ──────────────────────────────
@@ -135,25 +133,6 @@ export default function StudioPage() {
                 {studio.blurb}
               </p>
             </div>
-          </div>
-
-          {/* StatCards */}
-          <div className="grid grid-cols-3 gap-4">
-            <StatCard
-              label="Models"
-              value={models.length}
-              changeLabel="simulations"
-            />
-            <StatCard
-              label="Frameworks"
-              value={studioTools.length}
-              changeLabel="shared"
-            />
-            <StatCard
-              label="Live"
-              value={live}
-              changeLabel="interactive labs"
-            />
           </div>
         </div>
       </section>

@@ -5,7 +5,7 @@
 // Adding a model = adding one entry to `registry.ts`. Both index views and the
 // cross-link matrix update automatically.
 
-export type StudioId = 'quantviz' | 'neurolearn' | 'signalviz';
+export type StudioId = 'quantviz' | 'neurolearn' | 'physim';
 
 // Core tools (one dedicated page each) span all three studios. Secondary tools
 // are tags-only for now; they can be promoted to `core` later without changing

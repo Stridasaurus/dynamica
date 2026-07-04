@@ -1,7 +1,7 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import LandingPage from './pages/LandingPage';
 import StudioPage from './pages/StudioPage';
-import ToolsPage from './pages/ToolsPage';
+import MapPage from './pages/MapPage';
 import ToolPage from './pages/ToolPage';
 import QuantVizPage from './pages/QuantVizPage';
 import SiteHeader from './components/layout/SiteHeader';
@@ -14,8 +14,10 @@ export default function App() {
       <main className="flex-1">
         <Routes>
           <Route path="/" element={<LandingPage />} />
+          <Route path="/studios/signalviz" element={<Navigate to="/studios/physim" replace />} />
           <Route path="/studios/:studioId" element={<StudioPage />} />
-          <Route path="/tools" element={<ToolsPage />} />
+          <Route path="/map" element={<MapPage />} />
+          <Route path="/tools" element={<Navigate to="/map" replace />} />
           <Route path="/tools/:toolId" element={<ToolPage />} />
           <Route path="/quantviz" element={<QuantVizPage />} />
           <Route path="*" element={<LandingPage />} />

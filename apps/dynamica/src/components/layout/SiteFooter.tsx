@@ -30,11 +30,11 @@ export default function SiteFooter() {
             <FooterCol title="Studios">
               <FooterLink to="/studios/quantviz">QuantViz</FooterLink>
               <FooterLink to="/studios/neurolearn">NeuroLearn</FooterLink>
-              <FooterLink to="/studios/signalviz">SignalViz</FooterLink>
+              <FooterLink to="/studios/physim">PhySim</FooterLink>
             </FooterCol>
             <FooterCol title="Explore">
               <FooterLink to="/">By studio</FooterLink>
-              <FooterLink to="/tools">By framework</FooterLink>
+              <FooterLink to="/map">By framework</FooterLink>
             </FooterCol>
             <FooterCol title="More">
               <a

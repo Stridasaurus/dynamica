@@ -6,15 +6,16 @@ This file provides guidance to Claude Code when working in this repository.
 
 **Dynamica** is a Turborepo/pnpm monorepo of interactive toy models across three studios:
 - **QuantViz Studio** — finance (portfolio correlation analysis is the only live model today)
-- **NeuroLearn Studio** — neuroscience (planned: LIF neuron, spike stats, …)
-- **SignalViz Studio** — signal processing (planned: Fourier, filters, beamforming, …)
+- **NeuroLearn Studio** — neuroscience (next up: LIF neuron)
+- **PhySim Studio** — physical & engineered systems, incl. the signals-and-systems toolkit
+  (next up: Global Magnetometer Coherence)
 
 The differentiator is **dual navigation**: browse *by studio* or *by mathematical tool* (the shared
-math — e.g. correlation appears in all three). Both views and the cross-link matrix derive from a
-single registry. To add a model, append one `ModelEntry` to `apps/dynamica/src/models/registry.ts`.
-Roadmap: `docs/CONTENT_PLAN.md`. Root vision doc (thesis, invariants, milestones — every SPEC
-inherits from it): `docs/MANIFESTO.md`. Note: the manifesto renames SignalViz → **PhySim**
-(physics absorbs the signal-processing toys); the code has not been migrated yet.
+math — e.g. correlation appears in all three), unified in the cross-link **Matrix** at `/map`. Both
+views derive from a single registry. To add a model, append one `ModelEntry` to
+`apps/dynamica/src/models/registry.ts` (currently trimmed to live + next-up only — the full
+longlist lives in `docs/CONTENT_PLAN.md` and `docs/THESIS_RANKINGS.md`). Root vision doc (thesis,
+invariants, milestones — every SPEC inherits from it): `docs/MANIFESTO.md`.
 
 Deployed as a static site to GitHub Pages at `https://stridasaurus.github.io/dynamica/`
 (push to `master` → build → gh-pages).
@@ -78,8 +79,11 @@ ticker string if every proxy fails.
 ## Routes (HashRouter — required for GitHub Pages static hosting)
 
 - `#/` — landing
-- `#/studios/:studioId` — studio view (`quantviz` | `neurolearn` | `signalviz`)
-- `#/tools` and `#/tools/:toolId` — cross-studio tool views
+- `#/studios/:studioId` — studio view (`quantviz` | `neurolearn` | `physim`); `/studios/signalviz`
+  redirects to `/studios/physim`
+- `#/map` — the cross-link Matrix (thesis visual + both browse axes + progress tracker); `/tools`
+  redirects here
+- `#/tools/:toolId` — cross-studio tool exhibit ("same idea, three fields")
 - `#/quantviz` — the live model; URL state e.g. `?t=SPY:10,BND:50&range=2Y&w=90`
 
 ## Model catalog (`apps/dynamica/src/models/`)

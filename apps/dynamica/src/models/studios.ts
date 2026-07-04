@@ -40,15 +40,16 @@ export const STUDIOS: Studio[] = [
     },
   },
   {
-    id: 'signalviz',
-    name: 'SignalViz Studio',
-    field: 'Signal Processing',
-    lens: 'The Signal Lens',
-    icon: '📡',
+    id: 'physim',
+    name: 'PhySim Studio',
+    field: 'Physics',
+    lens: 'The Physical Lens',
+    icon: '🌐',
     blurb:
-      'The home of the shared toolkit. Decompose, filter, and detect — the ' +
-      'operations that reappear in finance and neuroscience.',
-    headline: 'Measurement mathematics, made visual.',
+      'Physical and engineered systems governed by the same laws as markets ' +
+      'and minds — mechanics, waves, and the signals-and-systems toolkit that ' +
+      'reads them.',
+    headline: 'Physical law, from mechanics to signals.',
     color: '#0f8a6a',
     theme: {
       text: 'text-teal-600 dark:text-teal-400',
