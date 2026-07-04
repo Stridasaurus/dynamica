@@ -12,7 +12,9 @@ This file provides guidance to Claude Code when working in this repository.
 The differentiator is **dual navigation**: browse *by studio* or *by mathematical tool* (the shared
 math — e.g. correlation appears in all three). Both views and the cross-link matrix derive from a
 single registry. To add a model, append one `ModelEntry` to `apps/dynamica/src/models/registry.ts`.
-Roadmap: `docs/CONTENT_PLAN.md`.
+Roadmap: `docs/CONTENT_PLAN.md`. Root vision doc (thesis, invariants, milestones — every SPEC
+inherits from it): `docs/MANIFESTO.md`. Note: the manifesto renames SignalViz → **PhySim**
+(physics absorbs the signal-processing toys); the code has not been migrated yet.
 
 Deployed as a static site to GitHub Pages at `https://stridasaurus.github.io/dynamica/`
 (push to `master` → build → gh-pages).
