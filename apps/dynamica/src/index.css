@@ -2,6 +2,26 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Q4 design pass: token override (see docs/DESIGN_Q4.md) ──────────────────
+ * Softens the base @settgast/ui tokens away from their pure-white/black,
+ * max-contrast corners (the "harsh" R3 concern) without dropping below AAA.
+ * Imported AFTER '@settgast/ui/styles.css' in main.tsx, so these equal-
+ * specificity rules win by source order. Reversible: delete this block to
+ * revert to library defaults. To be promoted into @settgast/ui/tokens.css at
+ * the next library publish, then deleted here (DESIGN_Q4.md §6). */
+:root {
+  --color-bg: #fbfbfa;
+  --color-surface: #f4f3f1;
+  --color-border: #e6e4e0;
+  --color-text-primary: #1f1f1f;
+}
+[data-theme='dark'] {
+  --color-bg: #16171a;
+  --color-surface: #1e2024;
+  --color-border: #2e3136;
+  --color-text-primary: #e8e8e6;
+}
+
 @layer base {
   body {
     font-family: 'Inter', system-ui, -apple-system, sans-serif;

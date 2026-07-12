@@ -82,7 +82,7 @@ export function Heatmap({ result }: Props) {
 
   return (
     <Card className="p-4">
-      <div className="relative h-[260px] w-full overflow-hidden rounded-[var(--radius-md)] border border-[var(--color-border)] bg-black">
+      <div className="relative h-[260px] w-full overflow-hidden rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[#0a0a0e]">
         <canvas ref={canvasRef} className="h-full w-full" />
       </div>
       <div className="mt-2 flex items-center justify-between text-[11px] text-[var(--color-text-muted)]">
