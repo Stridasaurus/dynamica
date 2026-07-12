@@ -1,10 +1,12 @@
 import { useParams, Link } from 'react-router-dom';
 import { Breadcrumb } from '@settgast/ui';
-import { TOOLS, getTool, getStudio, crossLinks } from '../models';
+import { coreTools, getTool, getStudio, crossLinks } from '../models';
 import type { ToolId } from '../models';
 import { ModelCard } from '../components/catalog/ModelCard';
 
-const VALID = new Set<string>(TOOLS.map((t) => t.id));
+// Only core tools get a dedicated page (secondary tools are tag-only —
+// PLAN.md R4: no page, no Map cell, nothing for a chip to link to).
+const VALID = new Set<string>(coreTools().map((t) => t.id));
 
 export default function ToolPage() {
   const { toolId } = useParams<{ toolId: string }>();

@@ -1,4 +1,5 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { useEffect } from 'react';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import LandingPage from './pages/LandingPage';
 import StudioPage from './pages/StudioPage';
 import MapPage from './pages/MapPage';
@@ -7,9 +8,22 @@ import QuantVizPage from './pages/QuantVizPage';
 import SiteHeader from './components/layout/SiteHeader';
 import SiteFooter from './components/layout/SiteFooter';
 
+/** Reset scroll on route change. Without this, HashRouter keeps the old
+ *  scroll position — footer links (clicked at the very bottom of a page)
+ *  navigated correctly but left the viewport at the bottom of the new page,
+ *  which read as "footer nav is broken" (PLAN.md R6). */
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  return null;
+}
+
 export default function App() {
   return (
     <div className="min-h-screen flex flex-col bg-[var(--color-bg)] transition-colors">
+      <ScrollToTop />
       <SiteHeader />
       <main className="flex-1">
         <Routes>

@@ -25,7 +25,11 @@ export default function SiteFooter() {
             </p>
           </div>
 
-          {/* Link columns */}
+          {/* Link columns — rebuilt per PLAN.md R6: Studios (browse-by-studio)
+              + Explore (By tool / Map, About). The old Explore "By studio"
+              link duplicated the Studios column and was dropped; "By
+              framework" was never adopted vocabulary (R5 — the term is
+              "tool"). */}
           <div className="flex flex-wrap gap-16">
             <FooterCol title="Studios">
               <FooterLink to="/studios/quantviz">QuantViz</FooterLink>
@@ -33,26 +37,13 @@ export default function SiteFooter() {
               <FooterLink to="/studios/physim">PhySim</FooterLink>
             </FooterCol>
             <FooterCol title="Explore">
-              <FooterLink to="/">By studio</FooterLink>
-              <FooterLink to="/map">By framework</FooterLink>
-            </FooterCol>
-            <FooterCol title="More">
-              <a
-                href="https://stridasaurus.github.io/StriderSettgast.com/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block py-[5px] text-sm text-[var(--color-text-secondary)] transition-colors hover:text-[var(--color-text-primary)]"
-              >
+              <FooterLink to="/map">By tool · the Map</FooterLink>
+              <ExternalFooterLink href="https://stridasaurus.github.io/StriderSettgast.com/">
                 About the author
-              </a>
-              <a
-                href="https://stridasaurus.github.io/StriderSettgast.com/blog/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block py-[5px] text-sm text-[var(--color-text-secondary)] transition-colors hover:text-[var(--color-text-primary)]"
-              >
+              </ExternalFooterLink>
+              <ExternalFooterLink href="https://stridasaurus.github.io/StriderSettgast.com/blog/">
                 Blog ↗
-              </a>
+              </ExternalFooterLink>
             </FooterCol>
           </div>
         </div>
@@ -86,5 +77,18 @@ function FooterLink({ to, children }: { to: string; children: React.ReactNode })
     >
       {children}
     </Link>
+  );
+}
+
+function ExternalFooterLink({ href, children }: { href: string; children: React.ReactNode }) {
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="block py-[5px] text-sm text-[var(--color-text-secondary)] transition-colors hover:text-[var(--color-text-primary)]"
+    >
+      {children}
+    </a>
   );
 }

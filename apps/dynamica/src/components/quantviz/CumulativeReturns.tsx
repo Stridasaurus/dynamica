@@ -2,15 +2,11 @@ import { Card } from '@settgast/ui';
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine,
 } from 'recharts';
-import type { ReturnsData, RangePreset } from '../../lib/types';
+import type { ReturnsData } from '../../lib/types';
 
 interface Props {
   data: ReturnsData;
-  rangePreset: RangePreset;
-  onRangeChange: (r: RangePreset) => void;
 }
-
-const RANGE_OPTIONS: RangePreset[] = ['3M', '6M', '1Y', '2Y', '5Y', '10Y', '20Y'];
 
 const COLORS = [
   '#6366f1', '#10b981', '#f59e0b', '#ef4444',
@@ -28,7 +24,10 @@ function subsample<T>(arr: T[], target: number): T[] {
   return result;
 }
 
-export default function CumulativeReturns({ data, rangePreset, onRangeChange }: Props) {
+// Time-range selector moved out to <RangeSelector /> next to Summary
+// Statistics (PLAN.md R2) — the range scopes the whole analysis, not just
+// this panel.
+export default function CumulativeReturns({ data }: Props) {
   const { dates, series } = data;
   const tickers = Object.keys(series);
 
@@ -51,21 +50,6 @@ export default function CumulativeReturns({ data, rangePreset, onRangeChange }: 
             (vs. period start)
           </span>
         </h3>
-        <div className="flex gap-1">
-          {RANGE_OPTIONS.map((r) => (
-            <button
-              key={r}
-              onClick={() => onRangeChange(r)}
-              className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-colors ${
-                rangePreset === r
-                  ? 'bg-indigo-600 text-white'
-                  : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
-              }`}
-            >
-              {r}
-            </button>
-          ))}
-        </div>
       </div>
 
       {tickers.length === 0 ? (

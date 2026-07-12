@@ -13,6 +13,7 @@ import CumulativeReturns from '../components/quantviz/CumulativeReturns';
 import PortfolioChart from '../components/quantviz/PortfolioChart';
 import SummaryStats from '../components/quantviz/SummaryStats';
 import RollingWindowPanel from '../components/quantviz/RollingWindowPanel';
+import RangeSelector from '../components/quantviz/RangeSelector';
 
 const MODEL = MODELS.find((m) => m.id === 'qv-correlation-lab')!;
 
@@ -276,9 +277,13 @@ export default function QuantVizPage() {
         lastRefreshed={lastRefreshed}
       />
 
-      {/* Summary Statistics */}
+      {/* Summary Statistics — the range selector sits here because it scopes
+          the whole analysis, not just the returns panel (PLAN.md R2) */}
       <div className="flex flex-col gap-3">
-        <SectionTitle>Summary Statistics</SectionTitle>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+          <SectionTitle>Summary Statistics</SectionTitle>
+          <RangeSelector rangePreset={rangePreset} onRangeChange={setRange} />
+        </div>
         <SummaryStats
           data={rollingCorrelation}
           series={filteredReturns.series}
@@ -301,11 +306,7 @@ export default function QuantVizPage() {
       </div>
 
       {/* Cumulative Returns */}
-      <CumulativeReturns
-        data={filteredReturns}
-        rangePreset={rangePreset}
-        onRangeChange={setRange}
-      />
+      <CumulativeReturns data={filteredReturns} />
 
       {/* Portfolio Weighted Return */}
       <div className="flex flex-col gap-3">

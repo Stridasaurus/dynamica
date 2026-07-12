@@ -13,7 +13,10 @@ export const MODELS: ModelEntry[] = [
     id: 'qv-correlation-lab',
     title: 'Diversification & Correlation Lab',
     studio: 'quantviz',
-    tools: ['correlation', 'networks'],
+    // `networks` tag dropped 2026-07-12 (PLAN.md R4): it's a secondary,
+    // tag-only tool with no Map cell, so tagging it implied a cross-link
+    // that points at nothing.
+    tools: ['correlation'],
     blurb: 'Build a portfolio and watch the rolling correlation heatmap reveal true diversification.',
     status: 'live',
     route: '/quantviz',
@@ -24,7 +27,10 @@ export const MODELS: ModelEntry[] = [
     id: 'nl-lif',
     title: 'Leaky Integrate-and-Fire Neuron',
     studio: 'neurolearn',
-    tools: ['dynamical-systems', 'stochastic'],
+    // `stochastic` tag dropped 2026-07-12 (PLAN.md R1): the LIF as built is
+    // deterministic cable+threshold — no noise term. Re-tag only if a
+    // noisy-input variant is added (S2: no cross-link is a lie).
+    tools: ['dynamical-systems'],
     blurb: 'Watch a membrane potential charge to threshold under step, ramp, and sinusoidal input.',
     status: 'planned',
     difficulty: 'intro',
