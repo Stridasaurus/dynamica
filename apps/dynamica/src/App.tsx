@@ -5,6 +5,7 @@ import StudioPage from './pages/StudioPage';
 import MapPage from './pages/MapPage';
 import ToolPage from './pages/ToolPage';
 import QuantVizPage from './pages/QuantVizPage';
+import NlCrossCorrelogramPage from './models/nl-cross-correlogram/NlCrossCorrelogramPage';
 import SiteHeader from './components/layout/SiteHeader';
 import SiteFooter from './components/layout/SiteFooter';
 
@@ -34,6 +35,7 @@ export default function App() {
           <Route path="/tools" element={<Navigate to="/map" replace />} />
           <Route path="/tools/:toolId" element={<ToolPage />} />
           <Route path="/quantviz" element={<QuantVizPage />} />
+          <Route path="/models/nl-cross-correlogram" element={<NlCrossCorrelogramPage />} />
           <Route path="*" element={<LandingPage />} />
         </Routes>
       </main>

@@ -24,6 +24,17 @@ export const MODELS: ModelEntry[] = [
     strength: 'flagship',
   },
   {
+    id: 'nl-cross-correlogram',
+    title: 'Cross-Correlogram & Functional Connectivity',
+    studio: 'neurolearn',
+    tools: ['correlation'],
+    blurb: 'Sweep correlation across every time lag between two spike trains to answer "who drives whom?"',
+    status: 'live',
+    route: '/models/nl-cross-correlogram',
+    difficulty: 'core',
+    strength: 'flagship',
+  },
+  {
     id: 'nl-lif',
     title: 'Leaky Integrate-and-Fire Neuron',
     studio: 'neurolearn',

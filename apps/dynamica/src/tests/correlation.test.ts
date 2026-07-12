@@ -3,6 +3,8 @@ import {
   mean,
   stddev,
   pearsonCorrelation,
+  crossCorrelation,
+  peakLag,
   dailyReturns,
   normalizedCumulativeReturns,
   correlationMatrix,
@@ -60,6 +62,76 @@ describe('pearsonCorrelation', () => {
 
   it('mismatched lengths => NaN', () => {
     expect(pearsonCorrelation([1, 2], [1, 2, 3])).toBeNaN();
+  });
+});
+
+describe('crossCorrelation', () => {
+  it('zero lag matches pearsonCorrelation exactly', () => {
+    const a = [1, 2, 3, 4, 5, 6];
+    const b = [2, 1, 4, 3, 6, 5];
+    const cc = crossCorrelation(a, b, 2);
+    const zero = cc.find((p) => p.lag === 0)!;
+    expect(zero.r).toBeCloseTo(pearsonCorrelation(a, b), 10);
+  });
+
+  it('produces 2*maxLag+1 entries spanning [-maxLag, +maxLag]', () => {
+    const cc = crossCorrelation([1, 2, 3, 4, 5], [1, 2, 3, 4, 5], 3);
+    expect(cc).toHaveLength(7);
+    expect(cc.map((p) => p.lag)).toEqual([-3, -2, -1, 0, 1, 2, 3]);
+  });
+
+  it('recovers a known lag: b is a shifted by +2 (a leads b by 2)', () => {
+    // b[i] = a[i-2] for i>=2 — a's pattern reappears in b two steps later.
+    // `a` MUST be non-linear data: a strictly monotonic/arithmetic ramp is
+    // degenerate here because any two shifted linear ramps are perfectly
+    // Pearson-correlated regardless of the shift amount, so every lag would
+    // score r=1 and the test couldn't actually discriminate the true one
+    // (caught while triaging this fixture — the original ramp-based version
+    // let ties resolve to the wrong lag on floating-point rounding).
+    let seed = 7;
+    const rand = () => { seed = (seed * 1103515245 + 12345) & 0x7fffffff; return seed / 0x7fffffff; };
+    const a = Array.from({ length: 40 }, () => Math.floor(rand() * 100));
+    const trueLag = 2;
+    const b = a.map((_, i) => (i >= trueLag ? a[i - trueLag] : -1));
+    const cc = crossCorrelation(a, b, 6);
+    const best = peakLag(cc)!;
+    expect(best.lag).toBe(trueLag);
+    expect(best.r).toBeCloseTo(1, 6);
+  });
+
+  it('degenerate overlap (<2 samples) => NaN at extreme lags', () => {
+    const cc = crossCorrelation([1, 2, 3], [1, 2, 3], 3);
+    const extreme = cc.find((p) => p.lag === 3)!; // only 0 overlapping samples
+    expect(extreme.r).toBeNaN();
+  });
+});
+
+describe('peakLag', () => {
+  it('picks the lag with the largest |r|, sign included', () => {
+    const cc = [
+      { lag: -1, r: 0.2 },
+      { lag: 0, r: -0.9 },
+      { lag: 1, r: 0.5 },
+    ];
+    const best = peakLag(cc)!;
+    expect(best.lag).toBe(0);
+    expect(best.r).toBe(-0.9);
+  });
+
+  it('ignores NaN entries', () => {
+    const cc = [
+      { lag: -1, r: NaN },
+      { lag: 0, r: 0.3 },
+    ];
+    expect(peakLag(cc)).toEqual({ lag: 0, r: 0.3 });
+  });
+
+  it('returns null when every entry is NaN', () => {
+    expect(peakLag([{ lag: 0, r: NaN }])).toBeNull();
+  });
+
+  it('returns null for an empty list', () => {
+    expect(peakLag([])).toBeNull();
   });
 });
 

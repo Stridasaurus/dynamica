@@ -19,6 +19,54 @@ export function pearsonCorrelation(a: number[], b: number[]): number {
   return cov / (sa * sb);
 }
 
+/** One lag of a cross-correlogram: the Pearson correlation between series `a`
+ *  and series `b` shifted by `lag` samples. */
+export interface LagCorrelation {
+  /** Shift applied to `b` relative to `a`, in samples. */
+  lag: number;
+  /** Pearson r over the overlapping region; NaN if the overlap is degenerate. */
+  r: number;
+}
+
+/**
+ * Lagged cross-correlation: Pearson r between `a` and `b` for every integer lag
+ * in [-maxLag, +maxLag]. This is the SAME Pearson core as `pearsonCorrelation`
+ * (S2 — no second correlation implementation); the only new idea is sliding one
+ * series against the other and correlating the overlapping samples.
+ *
+ * Sign convention: a positive lag shifts `b` LATER, so `r` at lag=+k measures
+ * how well `a(t)` predicts `b(t+k)` — i.e. `a` leads `b` by k. The peak lag
+ * therefore reads as "who drives whom": a peak at positive lag means `a` drives
+ * `b`. For spike trains, `a` and `b` are binned spike-count vectors.
+ */
+export function crossCorrelation(a: number[], b: number[], maxLag: number): LagCorrelation[] {
+  const out: LagCorrelation[] = [];
+  for (let lag = -maxLag; lag <= maxLag; lag++) {
+    // Overlapping windows: correlate a[i] with b[i+lag] wherever both exist.
+    const av: number[] = [];
+    const bv: number[] = [];
+    for (let i = 0; i < a.length; i++) {
+      const j = i + lag;
+      if (j < 0 || j >= b.length) continue;
+      av.push(a[i]);
+      bv.push(b[j]);
+    }
+    out.push({ lag, r: av.length >= 2 ? pearsonCorrelation(av, bv) : NaN });
+  }
+  return out;
+}
+
+/** The lag with the largest finite |r| in a cross-correlogram — the dominant
+ *  lead/lag relationship. Returns null if no finite value exists. */
+export function peakLag(cc: LagCorrelation[]): LagCorrelation | null {
+  let best: LagCorrelation | null = null;
+  for (const p of cc) {
+    if (isNaN(p.r)) continue;
+    if (best === null || Math.abs(p.r) > Math.abs(best.r)) best = p;
+  }
+  return best;
+}
+
 export function dailyReturns(prices: number[]): number[] {
   const returns: number[] = [];
   for (let i = 1; i < prices.length; i++) {

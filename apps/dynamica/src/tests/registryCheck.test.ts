@@ -29,6 +29,7 @@ const TOOL_MODULE: Partial<Record<ToolId, string>> = {
 // unchecked.
 const MODEL_ENTRY: Record<string, string> = {
   'qv-correlation-lab': 'pages/QuantVizPage.tsx',
+  'nl-cross-correlogram': 'models/nl-cross-correlogram/NlCrossCorrelogramPage.tsx',
 };
 
 /** Resolve a relative import specifier to a file under src/, if it exists. */
