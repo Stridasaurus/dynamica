@@ -5,6 +5,9 @@ import {
   pearsonCorrelation,
   crossCorrelation,
   peakLag,
+  nextPow2,
+  fft,
+  welchCoherence,
   dailyReturns,
   normalizedCumulativeReturns,
   correlationMatrix,
@@ -132,6 +135,123 @@ describe('peakLag', () => {
 
   it('returns null for an empty list', () => {
     expect(peakLag([])).toBeNull();
+  });
+});
+
+describe('nextPow2', () => {
+  it('matches known values', () => {
+    expect(nextPow2(1)).toBe(1);
+    expect(nextPow2(3)).toBe(4);
+    expect(nextPow2(128)).toBe(128);
+    expect(nextPow2(129)).toBe(256);
+  });
+});
+
+describe('fft', () => {
+  it('impulse -> flat unit magnitude across all bins', () => {
+    const N = 16;
+    const re = new Float64Array(N);
+    const im = new Float64Array(N);
+    re[0] = 1;
+    fft(re, im);
+    for (let k = 0; k < N; k++) {
+      expect(Math.hypot(re[k], im[k])).toBeCloseTo(1, 9);
+    }
+  });
+
+  it('pure sinusoid at bin b concentrates energy at bins b and N-b', () => {
+    const N = 32;
+    const b = 3;
+    const re = new Float64Array(N);
+    const im = new Float64Array(N);
+    for (let n = 0; n < N; n++) re[n] = Math.cos((2 * Math.PI * b * n) / N);
+    fft(re, im);
+    let peak = 0;
+    let peakK = -1;
+    let total = 0;
+    for (let k = 0; k < N; k++) {
+      const m = re[k] * re[k] + im[k] * im[k];
+      total += m;
+      if (m > peak) { peak = m; peakK = k; }
+    }
+    expect(peakK === b || peakK === N - b).toBe(true);
+    expect(peak / total).toBeGreaterThan(0.45);
+  });
+
+  it('conserves energy (Parseval): sum|x|^2 == (1/N) sum|X|^2', () => {
+    const N = 16;
+    const re = new Float64Array(N);
+    const im = new Float64Array(N);
+    let timeE = 0;
+    for (let i = 0; i < N; i++) {
+      re[i] = Math.sin(i) * 0.7 - 0.2;
+      timeE += re[i] * re[i];
+    }
+    fft(re, im);
+    let freqE = 0;
+    for (let k = 0; k < N; k++) freqE += re[k] * re[k] + im[k] * im[k];
+    expect(timeE).toBeCloseTo(freqE / N, 9);
+  });
+});
+
+describe('welchCoherence', () => {
+  it('identical signal against itself -> gamma^2 ~= 1 at every resolved bin', () => {
+    const nperseg = 128;
+    const fs = 4;
+    const n = 1024;
+    const x = new Float64Array(n);
+    for (let i = 0; i < n; i++) x[i] = Math.sin(2 * Math.PI * 0.05 * i);
+    const r = welchCoherence(x, x, fs, nperseg)!;
+    for (let k = 1; k < r.coherence.length; k++) {
+      expect(r.coherence[k]).toBeGreaterThan(0.999);
+    }
+    expect(r.freqs[1]).toBeCloseTo(fs / nextPow2(nperseg), 10);
+  });
+
+  it('independent noise -> low mean gamma^2', () => {
+    const nperseg = 128;
+    const fs = 1;
+    const n = 4096;
+    // Deterministic pseudo-noise (LCG) so the fixture is reproducible.
+    let seed = 12345;
+    const rand = () => { seed = (seed * 1103515245 + 12345) & 0x7fffffff; return seed / 0x7fffffff; };
+    const x = new Float64Array(n);
+    const y = new Float64Array(n);
+    for (let i = 0; i < n; i++) { x[i] = rand() - 0.5; y[i] = rand() - 0.5; }
+    const r = welchCoherence(x, y, fs, nperseg)!;
+    let sum = 0;
+    for (let k = 1; k < r.coherence.length; k++) sum += r.coherence[k];
+    expect(sum / (r.coherence.length - 1)).toBeLessThan(0.35);
+  });
+
+  it('too-short signal -> null', () => {
+    expect(welchCoherence(new Float64Array(10), new Float64Array(10), 1, 128)).toBeNull();
+  });
+
+  it('shared tone plus independent noise on each channel -> high coherence at the tone bin', () => {
+    // Both channels see the same 0.03 Hz tone but with independent noise added
+    // afterward — the physically realistic "common signal + local noise" case
+    // that motivates using coherence over the two studios' correlation math.
+    const nperseg = 128;
+    const fs = 2;
+    const n = 4000;
+    let seedA = 11;
+    let seedB = 22;
+    const randA = () => { seedA = (seedA * 1103515245 + 12345) & 0x7fffffff; return seedA / 0x7fffffff; };
+    const randB = () => { seedB = (seedB * 1103515245 + 12345) & 0x7fffffff; return seedB / 0x7fffffff; };
+    const x = new Float64Array(n);
+    const y = new Float64Array(n);
+    for (let i = 0; i < n; i++) {
+      x[i] = Math.sin(2 * Math.PI * 0.03 * i) + 0.15 * (randA() - 0.5);
+      y[i] = Math.sin(2 * Math.PI * 0.03 * i + 0.4) + 0.15 * (randB() - 0.5);
+    }
+    const r = welchCoherence(x, y, fs, nperseg)!;
+    const nfft = nextPow2(nperseg);
+    const kTone = Math.round((0.03 * nfft) / fs);
+    expect(r.coherence[kTone]).toBeGreaterThan(0.8);
+    // A bin far from the tone (no shared signal there) should be much lower.
+    const kFar = Math.min(r.coherence.length - 1, kTone + 15);
+    expect(r.coherence[kFar]).toBeLessThan(r.coherence[kTone]);
   });
 });
 

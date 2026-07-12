@@ -61,9 +61,17 @@ export const MODELS: ModelEntry[] = [
     id: 'ph-coherogram',
     title: 'Global Magnetometer Coherence',
     studio: 'physim',
-    tools: ['correlation', 'fourier'],
+    // Tagged `correlation` only for M1 (PLAN.md §2.2: "ships as the
+    // correlation leg; the fourier triple is M3+"). It genuinely carries a
+    // `fourier` dimension too (coherence is correlation resolved by
+    // frequency via an FFT step), but S2's registry check requires a live
+    // model's every tool tag to have a shipped canonical Compute Core module
+    // — there is no lib/fourier.ts yet. Re-add the `fourier` tag once that
+    // module (and its own triple) lands, same pattern as R1/R4's tag drops.
+    tools: ['correlation'],
     blurb: 'Coherence across a planet-wide magnetometer array — correlation, resolved by frequency, on real geophysical data.',
-    status: 'planned',
+    status: 'live',
+    route: '/models/ph-coherogram',
     difficulty: 'advanced',
     strength: 'flagship',
   },

@@ -67,6 +67,143 @@ export function peakLag(cc: LagCorrelation[]): LagCorrelation | null {
   return best;
 }
 
+// ── Coherence: correlation, resolved by frequency ──────────────────────────
+// Magnitude-squared coherence γ²(f) is Pearson r² computed per frequency bin
+// instead of once over the whole series (PLAN.md §2.2 — this is why
+// `ph-coherogram` carries both the `correlation` and `fourier` tags). It
+// answers "how correlated are these two signals AT this frequency", the same
+// diversification/lead-lag question `pearsonCorrelation`/`crossCorrelation`
+// answer in the time domain, just decomposed across the spectrum. The only
+// genuinely new primitive this requires is the FFT that gets each windowed
+// segment into the frequency domain first.
+
+/** Next power of 2 >= n (the FFT below requires a power-of-2 length). */
+export function nextPow2(n: number): number {
+  let p = 1;
+  while (p < n) p <<= 1;
+  return p;
+}
+
+/**
+ * In-place iterative Cooley-Tukey FFT. `re`/`im` must have equal, power-of-2
+ * length (use `nextPow2` to size the buffers) and are overwritten with the
+ * transform. Standard bit-reversal + butterfly implementation — this is
+ * infrastructure the coherence estimator needs, not itself a "tool" in the
+ * manifesto's taxonomy (the tool is coherence/correlation; the FFT is how
+ * it's computed in the frequency domain).
+ */
+export function fft(re: Float64Array, im: Float64Array): void {
+  const N = re.length;
+  let j = 0;
+  for (let i = 1; i < N; i++) {
+    let bit = N >> 1;
+    for (; j & bit; bit >>= 1) j ^= bit;
+    j ^= bit;
+    if (i < j) {
+      [re[i], re[j]] = [re[j], re[i]];
+      [im[i], im[j]] = [im[j], im[i]];
+    }
+  }
+  for (let len = 2; len <= N; len <<= 1) {
+    const ang = (-2 * Math.PI) / len;
+    const wRe = Math.cos(ang);
+    const wIm = Math.sin(ang);
+    for (let i = 0; i < N; i += len) {
+      let cRe = 1;
+      let cIm = 0;
+      for (let k = 0; k < len / 2; k++) {
+        const uRe = re[i + k];
+        const uIm = im[i + k];
+        const vRe = re[i + k + len / 2] * cRe - im[i + k + len / 2] * cIm;
+        const vIm = re[i + k + len / 2] * cIm + im[i + k + len / 2] * cRe;
+        re[i + k] = uRe + vRe;
+        im[i + k] = uIm + vIm;
+        re[i + k + len / 2] = uRe - vRe;
+        im[i + k + len / 2] = uIm - vIm;
+        const tmp = cRe * wRe - cIm * wIm;
+        cIm = cRe * wIm + cIm * wRe;
+        cRe = tmp;
+      }
+    }
+  }
+}
+
+export interface CoherenceResult {
+  /** Frequency of each bin, Hz (index-0 is DC). */
+  freqs: Float64Array;
+  /** Magnitude-squared coherence gamma^2 in [0, 1] per bin — 1 = perfectly
+   *  linearly related at that frequency, 0 = unrelated. */
+  coherence: Float64Array;
+  /** Cross-spectral phase per bin, radians. */
+  phase: Float64Array;
+  /** Number of Welch segments averaged (more = more reliable estimate). */
+  nSeg: number;
+}
+
+/**
+ * Welch magnitude-squared coherence between two equal-length real signals:
+ * split into overlapping Hann-windowed segments of length `nperseg`
+ * (50%-overlap, zero-padded to the next power of 2), FFT each, and average
+ * the cross- and auto-spectra across segments before forming
+ * gamma^2 = |Pxy|^2 / (Pxx * Pyy). This is the frequency-domain generalization
+ * of `pearsonCorrelation` — same "how related are these two series" question,
+ * decomposed per frequency bin instead of collapsed to one number. Returns
+ * `null` if the signals are too short for at least one segment.
+ */
+export function welchCoherence(
+  x: number[] | Float64Array,
+  y: number[] | Float64Array,
+  fs: number,
+  nperseg: number,
+): CoherenceResult | null {
+  const N = nperseg;
+  const step = N >> 1;
+  const nfft = nextPow2(N);
+  const half = (nfft >> 1) + 1;
+
+  const win = new Float64Array(N);
+  for (let i = 0; i < N; i++) win[i] = 0.5 * (1 - Math.cos((2 * Math.PI * i) / (N - 1)));
+
+  const Pxx = new Float64Array(half);
+  const Pyy = new Float64Array(half);
+  const PxyRe = new Float64Array(half);
+  const PxyIm = new Float64Array(half);
+  let nSeg = 0;
+
+  for (let s = 0; s + N <= x.length; s += step) {
+    const rX = new Float64Array(nfft);
+    const iX = new Float64Array(nfft);
+    const rY = new Float64Array(nfft);
+    const iY = new Float64Array(nfft);
+    for (let i = 0; i < N; i++) {
+      rX[i] = x[s + i] * win[i];
+      rY[i] = y[s + i] * win[i];
+    }
+    fft(rX, iX);
+    fft(rY, iY);
+    for (let k = 0; k < half; k++) {
+      Pxx[k] += rX[k] * rX[k] + iX[k] * iX[k];
+      Pyy[k] += rY[k] * rY[k] + iY[k] * iY[k];
+      PxyRe[k] += rX[k] * rY[k] + iX[k] * iY[k];
+      PxyIm[k] += iX[k] * rY[k] - rX[k] * iY[k];
+    }
+    nSeg++;
+  }
+  if (!nSeg) return null;
+
+  const coherence = new Float64Array(half);
+  const freqs = new Float64Array(half);
+  const phase = new Float64Array(half);
+  for (let k = 0; k < half; k++) {
+    freqs[k] = (k * fs) / nfft;
+    const num = PxyRe[k] * PxyRe[k] + PxyIm[k] * PxyIm[k];
+    const den = Pxx[k] * Pyy[k];
+    coherence[k] = den > 1e-30 ? Math.min(1, num / den) : 0;
+    phase[k] = Math.atan2(PxyIm[k], PxyRe[k]);
+  }
+  return { freqs, coherence, phase, nSeg };
+}
+
 export function dailyReturns(prices: number[]): number[] {
   const returns: number[] = [];
   for (let i = 1; i < prices.length; i++) {
