@@ -242,4 +242,15 @@ The migration is complete when **all** of:
 
 ## Done-log (executor appends one line per phase landed)
 
-- *(empty — no phase executed as of 2026-07-16)*
+- **2026-07-16 — P1 landed** (standard tier, Mac, `ad39751`, pushed). Removed both
+  vestigial submodules (`git rm apps/correlationlab apps/lif-project` + `.gitmodules`,
+  zero-import grep re-confirmed first) and fixed `CLAUDE.md`'s three stale spots
+  (workspace-structure diagram, `packages/ui` claim, `@settgast/ui` build-step gotcha —
+  now documents it as a plain npm dependency). Verified: `pnpm install && pnpm build &&
+  pnpm --filter @dynamica/app test` all green (115/115 tests); fresh `--depth 1` clone
+  (no submodule init) installs + builds clean. **Not verified this session:** the
+  post-push deploy workflow actually completing — GitHub's API was returning 503s
+  repo-wide at push time (`gh run list` failed, `gh api repos/...` returned an HTML
+  error page, not JSON — a platform outage, not an auth issue); `curl` against the live
+  site returned 200 but on the pre-push build. Next session should re-check
+  `gh run list --repo Stridasaurus/dynamica` once the API is back.
