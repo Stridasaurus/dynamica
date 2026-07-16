@@ -1,107 +1,107 @@
 {
   "tickers": {
     "ARKK": {
-      "price": 79.5999984741211,
+      "price": 76.66999816894531,
       "name": "ARK Innovation ETF",
       "type": "ETF"
     },
     "BND": {
-      "price": 72.81999969482422,
+      "price": 72.80999755859375,
       "name": "Vanguard Total Bond Market ETF",
       "type": "ETF"
     },
     "DJP": {
-      "price": 46.849998474121094,
+      "price": 46.290000915527344,
       "name": "iPath Bloomberg Commodity Index",
       "type": "ETF"
     },
     "GLD": {
-      "price": 372.3500061035156,
+      "price": 364.9599914550781,
       "name": "SPDR Gold Shares",
       "type": "ETF"
     },
     "IEF": {
-      "price": 93.77999877929688,
+      "price": 93.72000122070312,
       "name": "iShares 7-10 Year Treasury ETF",
       "type": "ETF"
     },
     "IWM": {
-      "price": 295.7699890136719,
+      "price": 295.5899963378906,
       "name": "iShares Russell 2000 ETF",
       "type": "ETF"
     },
     "QQQ": {
-      "price": 717.739990234375,
+      "price": 705.9400024414062,
       "name": "Invesco QQQ (Nasdaq-100)",
       "type": "ETF"
     },
     "SPY": {
-      "price": 754.8099975585938,
+      "price": 750.719970703125,
       "name": "SPDR S&P 500 ETF",
       "type": "ETF"
     },
     "TIP": {
-      "price": 108.06999969482422,
+      "price": 107.97000122070312,
       "name": "iShares TIPS Bond ETF",
       "type": "ETF"
     },
     "TLT": {
-      "price": 84.23999786376953,
+      "price": 84.20999908447266,
       "name": "iShares 20+ Year Treasury ETF",
       "type": "ETF"
     },
     "VEA": {
-      "price": 70.81999969482422,
+      "price": 70.02999877929688,
       "name": "Vanguard Developed Markets ETF",
       "type": "ETF"
     },
     "VGT": {
-      "price": 116.5,
+      "price": 114.23999786376953,
       "name": "Vanguard Information Technology ETF",
       "type": "ETF"
     },
     "VNQ": {
-      "price": 97.86000061035156,
+      "price": 100.06999969482422,
       "name": "Vanguard Real Estate ETF",
       "type": "ETF"
     },
     "VTV": {
-      "price": 217.49000549316406,
+      "price": 218.86000061035156,
       "name": "Vanguard Value ETF",
       "type": "ETF"
     },
     "VUG": {
-      "price": 87.76000213623047,
+      "price": 86.55999755859375,
       "name": "Vanguard Growth ETF",
       "type": "ETF"
     },
     "VWO": {
-      "price": 59.47999954223633,
+      "price": 58.84000015258789,
       "name": "Vanguard Emerging Markets ETF",
       "type": "ETF"
     },
     "XLE": {
-      "price": 56.5,
+      "price": 57.02000045776367,
       "name": "Energy Select Sector SPDR",
       "type": "ETF"
     },
     "XLF": {
-      "price": 56.560001373291016,
+      "price": 56.75,
       "name": "Financial Select Sector SPDR",
       "type": "ETF"
     },
     "XLK": {
-      "price": 181.5800018310547,
+      "price": 177.52000427246094,
       "name": "Technology Select Sector SPDR",
       "type": "ETF"
     },
     "XLU": {
-      "price": 45.220001220703125,
+      "price": 45.470001220703125,
       "name": "Utilities Select Sector SPDR",
       "type": "ETF"
     },
     "XLV": {
-      "price": 158.2899932861328,
+      "price": 161.8000030517578,
       "name": "Health Care Select Sector SPDR",
       "type": "ETF"
     }
