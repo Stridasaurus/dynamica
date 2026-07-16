@@ -1,6 +1,0 @@
-[submodule "apps/correlationlab"]
-	path = apps/correlationlab
-	url = https://github.com/Stridasaurus/correlationlab.git
-[submodule "apps/lif-project"]
-	path = apps/lif-project
-	url = https://github.com/Stridasaurus/LIF-project.git

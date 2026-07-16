@@ -25,24 +25,21 @@ Deployed as a static site to GitHub Pages at `https://stridasaurus.github.io/dyn
 ```
 dynamica/
 ├── apps/
-│   ├── dynamica/          # Main Vite/React 19 app — @dynamica/app (the pnpm workspace member)
-│   ├── correlationlab/    # git submodule — original correlation SPA (NOT in pnpm workspace)
-│   └── lif-project/       # git submodule — LIF neuron sim (NOT in pnpm workspace)
-├── packages/
-│   └── ui/                # @settgast/ui — shared design-system component library
+│   └── dynamica/          # Main Vite/React 19 app — @dynamica/app (the sole pnpm workspace member)
 ├── scripts/fetch_data.py  # Data pipeline → apps/dynamica/public/data/
 └── .github/workflows/     # data-refresh.yml (Mon–Fri market data) · deploy.yml
 ```
 
-Submodules need `git submodule update --init --recursive` after cloning; they manage their own deps.
+`@settgast/ui` is consumed as the **published npm package** (`@settgast/ui@0.2.0`, see
+`pnpm-workspace.yaml`), not a workspace member — it is developed in the standalone `settgast-ui`
+repo and republished there; promotion brief for pending token changes: `docs/DESIGN_Q4.md` §6.
 
 ## Commands
 
 ```bash
-pnpm install                         # all workspace deps
-pnpm --filter @settgast/ui build     # MUST build ui before the app can import from it
+pnpm install                         # all workspace deps, incl. @settgast/ui from npm
 pnpm --filter @dynamica/app dev      # dev server, localhost:5173
-pnpm build                           # build everything (turbo orders: ui → app)
+pnpm build                           # build everything
 pnpm typecheck
 pnpm --filter @dynamica/app test     # app tests only (pnpm test runs all)
 
@@ -54,10 +51,9 @@ pip install -r scripts/requirements.txt
 
 ## Gotchas & non-obvious behavior
 
-**`@settgast/ui` build step.** Built with tsup; you must run its build before the app can import
-from it. Import the bundled CSS as `import '@settgast/ui/styles'`. This package is currently
-duplicated with the standalone `settgast-ui` repo — edit **only this copy** until the two sources
-are consolidated.
+**`@settgast/ui` source of truth.** Consumed here as a plain npm dependency (`^0.2.0`), not edited
+in this repo. Import the bundled CSS as `import '@settgast/ui/styles'`. Component/token changes go
+into the standalone `settgast-ui` repo and land here on its next npm publish.
 
 **Tailwind whole-class rule.** Class strings in `StudioTheme` (in the registry) must be written
 whole, never interpolated, or Tailwind's content scanner won't see them and the styles vanish.
