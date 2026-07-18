@@ -254,3 +254,10 @@ The migration is complete when **all** of:
   error page, not JSON — a platform outage, not an auth issue); `curl` against the live
   site returned 200 but on the pre-push build. Next session should re-check
   `gh run list --repo Stridasaurus/dynamica` once the API is back.
+- **2026-07-18 — P1 deploy re-checked (standard tier, Windows).** `gh run list` shows the
+  P1 push's "Deploy to GitHub Pages" run (`chore: remove vestigial submodules, fix stale
+  CLAUDE.md (P1)`, 2026-07-16T23:28:40Z) completed successfully, followed by a successful
+  `pages build and deployment` run — closing the item the P1 entry above left unverified.
+  No further phases attempted: **P2–P5 remain gated on Q5** (M1 acceptance sweep not yet
+  green — S7/S8 checks still waiting on Strider per the vault dashboard), consistent with
+  D1.
