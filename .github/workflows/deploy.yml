@@ -29,9 +29,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build @settgast/ui
-        run: pnpm --filter @settgast/ui build
-
       - name: Build app
         run: pnpm --filter @dynamica/app build
 
